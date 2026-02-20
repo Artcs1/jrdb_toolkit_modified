@@ -43,16 +43,16 @@ for det in detection_files:
 
     data = [det.split('/')[-1]]
     print(data)
-    data.append(round(float(performance[0])*100,2))
     data.append(round(float(performance[1])*100,2))
     data.append(round(float(performance[2])*100,2))
     data.append(round(float(performance[3])*100,2))
     data.append(round(float(performance[4])*100,2))
     data.append(round(float(performance[5])*100,2))
+    data.append(round(float(performance[0])*100,2))
 
     datas.append(data)
 
-columns = ['name', 'ap', 'G1', 'G2', 'G3', 'G4', 'G5']
+columns = ['name', 'G1', 'G2', 'G3', 'G4', 'G5', 'AP']
 output_csv = args.dataset_path.split('/')[-1] + '.txt'
 print(output_csv)
 df = pd.DataFrame(datas, columns=columns)
