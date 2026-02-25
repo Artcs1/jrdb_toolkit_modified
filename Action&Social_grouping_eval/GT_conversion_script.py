@@ -1,5 +1,7 @@
 import json
 import os
+from collections import defaultdict
+import pickle
 
 #put the path to train-set annotation files here!
 #annot_path = '/home/jeffri/Desktop/raw_jrdb/labels/labels_2d_activity_social_stitched/'
@@ -41,20 +43,27 @@ def construct_GT():
     dc = 1  #dont care!
     seqs = sorted(os.listdir(annot_path))
     labelmap, _ = read_labelmap('./label_map/task_1.pbtxt')
+    results={}
     for idx, seq in enumerate(seqs):
+        if idx not in results:
+            results[idx] = {}
         data = JRDB_read_annotations(annot_path+'/'+seq)
         for image in sorted(data['labels'].keys()):  # in each image
             img = image.split('.')[0]
             if int(img)%15==0 and int(img)>=15 and int(img)<=FRAMES_NUM[idx + 1]:
+                map_group_members = defaultdict(list)
                 num_box = len(data['labels'][image])
                 for i in range(num_box):  # for each box
                     x, y, w, h = data['labels'][image][i]['box']
+                    track_id = int(data['labels'][image][i]['label_id'].split(':')[-1])
                     x1, y1, x2, y2 = x, y, x + w, y + h
                     no_eval = data['labels'][image][i]['attributes']['no_eval']
                     if x>=0 and x2<=W and y>=0 and y2<=H and w>0 and h>0 and not no_eval:
                         #social group
                         group_label = data['labels'][image][i]['social_group']['cluster_ID']
                         group_level = data['labels'][image][i]['social_group']['cluster_stat']
+                        map_group_members[group_label].append(track_id)
+
                         if group_level>2:
                             lvl = 1
                         else:
@@ -96,5 +105,19 @@ def construct_GT():
                                 f = open('./out/gt_activity.txt', "a+")
                                 f.write(str_to_be_added + "\r\n")
                                 f.close()
+
+                groups = list(map_group_members.values())
+
+                #print(img)
+                #print(int(img))
+
+                results[idx][str(int(img)//15 - 1)] = groups
+                #print(results)
+                #input()
+
+    if results:
+        save_path ="gt.pkl"
+        with open(save_path, "wb") as f:
+            pickle.dump(results, f)
 
 construct_GT()
