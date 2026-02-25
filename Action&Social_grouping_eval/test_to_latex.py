@@ -29,8 +29,10 @@ def extract_model_info(name):
     
     # Extract model family and parameters
     # Look for patterns like Qwen2.5, Qwen3
-    model_match = re.search(r'(Qwen[\d.]+)', name)
+    #model_match = re.search(r'(Qwen[\d.]+)', name)
+    model_match = re.search(r'(Qwen[\d.]+|Cosmos-Reason\d+|gemini-\d)', name)
     model_family = model_match.group(1) if model_match else 'Unknown'
+    #print(model_family)
     
     # Extract parameter size (e.g., 3B, 7B, 32B, 72B, 30B-A3B, 4B)
     param_match = re.search(r'(\d+B)', name)
@@ -129,7 +131,7 @@ def create_merged_latex_table(single_frame_data, video_data):
     
     # Sort parameter sizes
     param_order = {
-        '3B': 1, '4B': 2, '7B': 3, '30B-A3B': 4, '32B': 5, '72B': 6, '235B-A22B':7
+            '2B':1, '3B': 2, '4B': 3, '7B': 4, '8B': 5, '30B-A3B': 6, '32B': 7, '72B': 8, '235B-A22B':9
     }
     
     # Method order: Sequentially, Atomic, + metadata
@@ -306,11 +308,11 @@ def csv_to_latex(input_file, output_file='table.tex'):
     try:
         with open(output_file, 'w') as f:
             f.write(latex_code)
-        print(f"LaTeX table successfully saved to '{output_file}'")
-        print(f"Single Frame rows: {len(single_frame_data)-1}")
-        print(f"Video rows: {len(video_data)-1}")
-        print("\nPreview:")
-        print(latex_code)
+        #print(f"LaTeX table successfully saved to '{output_file}'")
+        #print(f"Single Frame rows: {len(single_frame_data)-1}")
+        #print(f"Video rows: {len(video_data)-1}")
+        #print("\nPreview:")
+        #print(latex_code)
     except Exception as e:
         print(f"Error writing output file: {e}")
 
