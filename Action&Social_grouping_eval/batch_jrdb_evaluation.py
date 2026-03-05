@@ -4,7 +4,10 @@ import glob
 import argparse
 import pandas as pd
 
-groundtruth = "out/gt_group.txt" # CHANGE
+#groundtruth = "out/gt_group.txt" # CHANGE
+groundtruth = 'gt_sekai_ours_2.txt'
+#groundtruth = 'gt_sekai_ours_22.txt'
+#groundtruth = 'gt_sekai_ours_42.txt'
 task = "task_3"
 labelmap = "./label_map/task_3.pbtxt"
 
@@ -17,6 +20,7 @@ detection_files = glob.glob(args.dataset_path + '/*')
 detection_files.sort()
 datas = []
 for det in detection_files:
+
     print(f"Evaluating: {det}")
 
     result = subprocess.run(
@@ -42,7 +46,6 @@ for det in detection_files:
     print(performance)
 
     data = [det.split('/')[-1]]
-    print(data)
     data.append(round(float(performance[1])*100,2))
     data.append(round(float(performance[2])*100,2))
     data.append(round(float(performance[3])*100,2))
@@ -54,7 +57,6 @@ for det in detection_files:
 
 columns = ['name', 'G1', 'G2', 'G3', 'G4', 'G5', 'AP']
 output_csv = args.dataset_path.split('/')[-1] + '.txt'
-print(output_csv)
 df = pd.DataFrame(datas, columns=columns)
 df.to_csv(output_csv, index=False)
     

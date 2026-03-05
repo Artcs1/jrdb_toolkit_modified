@@ -671,6 +671,7 @@ class ObjectDetectionEvaluation(object):
           whether a ground truth box is a group-of box or not
     """
     for class_index in range(self.num_class):
+      #print(groundtruth_class_labels)
       num_gt_instances = np.sum(groundtruth_class_labels[
           ~groundtruth_is_difficult_list
           & ~groundtruth_is_group_of_list] == class_index)
@@ -704,6 +705,9 @@ class ObjectDetectionEvaluation(object):
 
     for class_index in range(self.num_class):
 
+      #print('Class Index:', class_index)
+      #print(self.num_gt_instances_per_class)
+
       if self.num_gt_instances_per_class[class_index] == 0:
         continue
 
@@ -720,12 +724,22 @@ class ObjectDetectionEvaluation(object):
         all_tp_fp_labels = np.append(all_tp_fp_labels, tp_fp_labels)
 
 
+      #print(scores)
+      #print(tp_fp_labels)
+      #print(self.num_gt_instances_per_class[class_index])
+
       precision, recall = metrics.compute_precision_recall(
           scores, tp_fp_labels, self.num_gt_instances_per_class[class_index])
       self.precisions_per_class.append(precision)
       self.recalls_per_class.append(recall)
+      #print('metrics')
+      #print(precision)
+      #print(recall)
       average_precision = metrics.compute_average_precision(precision, recall)
       self.average_precision_per_class[class_index] = average_precision
+
+      #print('_____-----________________--')
+      #input()
 
     self.corloc_per_class = metrics.compute_cor_loc(
         self.num_gt_imgs_per_class,
@@ -739,6 +753,9 @@ class ObjectDetectionEvaluation(object):
     else:
       mean_ap = np.nanmean(self.average_precision_per_class)
     mean_corloc = np.nanmean(self.corloc_per_class)
+
+    #print(self.average_precision_per_class)
+    #input()
 
     return ObjectDetectionEvalMetrics(
         self.average_precision_per_class, mean_ap, self.precisions_per_class,
